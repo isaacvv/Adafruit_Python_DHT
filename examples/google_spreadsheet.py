@@ -43,10 +43,10 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 # Type of sensor, can be Adafruit_DHT.DHT11, Adafruit_DHT.DHT22, or Adafruit_DHT.AM2302.
-DHT_TYPE = Adafruit_DHT.DHT22
+DHT_TYPE = Adafruit_DHT.AM2302
 
 # Example of sensor connected to Raspberry Pi pin 23
-DHT_PIN  = 23
+DHT_PIN  = 4
 # Example of sensor connected to Beaglebone Black pin P8_11
 #DHT_PIN  = 'P8_11'
 
