@@ -5,3 +5,4 @@ setuptools-*
 *.so
 dist
 
+examples/rpi2.json

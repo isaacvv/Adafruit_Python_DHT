@@ -69,7 +69,7 @@ DHT_PIN  = 4
 # Then use the File -> Share... command in the spreadsheet to share it with read
 # and write acess to the email address above.  If you don't do this step then the
 # updates to the sheet will fail!
-GDOCS_OAUTH_JSON       = 'rpi2-214313-54b7b9ad3520.json'
+GDOCS_OAUTH_JSON       = 'rpi2.json'
 
 # Google Docs spreadsheet name.
 GDOCS_SPREADSHEET_NAME = 'RPi2'
