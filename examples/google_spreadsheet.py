@@ -69,10 +69,10 @@ DHT_PIN  = 23
 # Then use the File -> Share... command in the spreadsheet to share it with read
 # and write acess to the email address above.  If you don't do this step then the
 # updates to the sheet will fail!
-GDOCS_OAUTH_JSON       = 'your SpreadsheetData-*.json file name'
+GDOCS_OAUTH_JSON       = 'rpi2-214313-54b7b9ad3520.json'
 
 # Google Docs spreadsheet name.
-GDOCS_SPREADSHEET_NAME = 'your google docs spreadsheet name'
+GDOCS_SPREADSHEET_NAME = 'RPi2'
 
 # How long to wait (in seconds) between measurements.
 FREQUENCY_SECONDS      = 30
@@ -81,10 +81,13 @@ FREQUENCY_SECONDS      = 30
 def login_open_sheet(oauth_key_file, spreadsheet):
     """Connect to Google Docs spreadsheet and return the first worksheet."""
     try:
-        scope =  ['https://spreadsheets.google.com/feeds']
+        scope =  ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
         credentials = ServiceAccountCredentials.from_json_keyfile_name(oauth_key_file, scope)
         gc = gspread.authorize(credentials)
-        worksheet = gc.open(spreadsheet).sheet1
+        #worksheet = gc.open(spreadsheet).sheet1
+        gc = gspread.authorize(credentials)
+        sht = gc.open(spreadsheet)
+        worksheet = sht.get_worksheet(0)
         return worksheet
     except Exception as ex:
         print('Unable to login and get spreadsheet.  Check OAuth credentials, spreadsheet name, and make sure spreadsheet is shared to the client_email address in the OAuth .json file!')
@@ -115,11 +118,12 @@ while True:
 
     # Append the data in the spreadsheet, including a timestamp
     try:
-        worksheet.append_row((datetime.datetime.now(), temp, humidity))
-    except:
+        #worksheet.append_row((datetime.datetime.now(), temp, humidity))
+         worksheet.append_row([str(datetime.datetime.now()), temp, humidity])
+    except Exception as ex1:
         # Error appending data, most likely because credentials are stale.
         # Null out the worksheet so a login is performed at the top of the loop.
-        print('Append error, logging in again')
+        print('Append error, logging in again', ex1)
         worksheet = None
         time.sleep(FREQUENCY_SECONDS)
         continue
