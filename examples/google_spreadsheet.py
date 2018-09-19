@@ -40,6 +40,7 @@ import datetime
 
 import Adafruit_DHT
 import gspread
+import urllib2
 from oauth2client.service_account import ServiceAccountCredentials
 
 # Type of sensor, can be Adafruit_DHT.DHT11, Adafruit_DHT.DHT22, or Adafruit_DHT.AM2302.
@@ -72,7 +73,7 @@ DHT_PIN  = 4
 GDOCS_OAUTH_JSON       = 'rpi2.json'
 
 # Google Docs spreadsheet name.
-GDOCS_SPREADSHEET_NAME = 'RPi2'
+GDOCS_SPREADSHEET_NAME = 'Grow Box'
 
 # How long to wait (in seconds) between measurements.
 FREQUENCY_SECONDS      = 30
@@ -98,6 +99,9 @@ def login_open_sheet(oauth_key_file, spreadsheet):
 print('Logging sensor measurements to {0} every {1} seconds.'.format(GDOCS_SPREADSHEET_NAME, FREQUENCY_SECONDS))
 print('Press Ctrl-C to quit.')
 worksheet = None
+
+heater_state = False
+
 while True:
     # Login if necessary.
     if worksheet is None:
@@ -105,21 +109,39 @@ while True:
 
     # Attempt to get sensor reading.
     humidity, temp = Adafruit_DHT.read(DHT_TYPE, DHT_PIN)
-
+ 
     # Skip to the next reading if a valid measurement couldn't be taken.
     # This might happen if the CPU is under a lot of load and the sensor
     # can't be reliably read (timing is critical to read the sensor).
     if humidity is None or temp is None:
         time.sleep(2)
         continue
-
-    print('Temperature: {0:0.1f} C'.format(temp))
+    
+    # Change temp to F
+    temp = temp * 9/5.0 + 32
+    
+    print('Temperature: {0:0.1f} F'.format(temp))
     print('Humidity:    {0:0.1f} %'.format(humidity))
+    #print(temp)
+
+    if temp > 78:
+        if heater_state:
+            content = urllib2.urlopen('http://192.168.1.147/cm?cmnd=Power%20Off').read()
+            heater_state = False
+            print('Heater turned OFF')
+    else:
+        if heater_state == False:
+            content = urllib2.urlopen('http://192.168.1.147/cm?cmnd=Power%20On').read()
+            heater_state = True
+            print('Heater turned ON')
+    
+
+    
 
     # Append the data in the spreadsheet, including a timestamp
     try:
         #worksheet.append_row((datetime.datetime.now(), temp, humidity))
-         worksheet.insert_row([str(datetime.datetime.now()), temp, humidity], index=2)
+         worksheet.insert_row([str(datetime.datetime.now()), temp, humidity, heater_state], index=2)
     except Exception as ex1:
         # Error appending data, most likely because credentials are stale.
         # Null out the worksheet so a login is performed at the top of the loop.
