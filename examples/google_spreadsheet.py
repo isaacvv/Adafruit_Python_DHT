@@ -100,7 +100,7 @@ print('Logging sensor measurements to {0} every {1} seconds.'.format(GDOCS_SPREA
 print('Press Ctrl-C to quit.')
 worksheet = None
 
-heater_state = False
+heater_state = ''
 
 while True:
     # Login if necessary.
@@ -125,15 +125,15 @@ while True:
     #print(temp)
 
     if temp > 78:
-        if heater_state:
-            content = urllib2.urlopen('http://192.168.1.147/cm?cmnd=Power%20Off').read()
-            heater_state = False
-            print('Heater turned OFF')
+ #       if heater_state:
+         content = urllib2.urlopen('http://192.168.1.147/cm?cmnd=Power%20Off').read()
+         heater_state = 'Off'
+         print('Heater turned OFF')
     else:
-        if heater_state == False:
-            content = urllib2.urlopen('http://192.168.1.147/cm?cmnd=Power%20On').read()
-            heater_state = True
-            print('Heater turned ON')
+#        if heater_state == False:
+         content = urllib2.urlopen('http://192.168.1.147/cm?cmnd=Power%20On').read()
+         heater_state = 'On'
+         print('Heater turned ON')
     
 
     
