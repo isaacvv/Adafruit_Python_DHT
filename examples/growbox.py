@@ -125,12 +125,12 @@ while True:
 
 
 
-        if humidity > 85:
+        if humidity > 72:
             if fan_state == False:
                  fan_content = urllib2.urlopen('http://192.168.1.148/cm?cmnd=Power%20On').read()
                  fan_state = 'On'
                  print('Fan turned ON')
-        elif humidity < 70:
+        elif humidity < 50:
             if fan_state == True:
                  fan_content = urllib2.urlopen('http://192.168.1.148/cm?cmnd=Power%20Off').read()
                  fan_state = 'Off'
